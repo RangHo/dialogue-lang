@@ -1,2 +1,2 @@
 # DialogueScript
-Simple Dialogue Generator Library
+Dialogue Script parser for Visual Novel-like games
