@@ -59,10 +59,6 @@ namespace RangHo.DialogueScript
 			{
 				OutputManager.Exception(e);
 			}
-			finally
-			{
-				InputPosition++;
-			}
 			
 			return true;
 		}
@@ -73,6 +69,8 @@ namespace RangHo.DialogueScript
 			Identifier speaker = InterpreteIdentifier((AST)CurrentAST.Target);
 			string content = InterpreteString((AST)CurrentAST.Value) as string;
 			OutputManager.Say(speaker.Name, content);
+			
+			InputPosition++;
 		}
 		
 		public void InterpreteSet()
@@ -87,6 +85,8 @@ namespace RangHo.DialogueScript
 			string property = InterpreteIdentifier(CurrentAST.Target as AST).Name;
 			OutputManager.Select(property);
 			OutputManager.Set(Maybe(CurrentAST.Value as AST, InterpreteIdentifier, InterpreteNumber, InterpreteBoolean, InterpreteString));
+			
+			InputPosition++;
 		}
 		
 		public void InterpreteLabel()
@@ -104,6 +104,8 @@ namespace RangHo.DialogueScript
 				string label = InterpreteString(Input[index].Target as AST) as string;
 				string content = InterpreteString(Input[index].Value as AST) as string;
 				Choices.Add(label, content);
+				
+				InputPosition++;
 			}
 			
 			OutputManager.Choices(Choices, ref ChosenLabel);
