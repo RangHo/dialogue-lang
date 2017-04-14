@@ -25,7 +25,6 @@ namespace RangHo.DialogueScript
 				return null;
 			
 			AST ParsedAST = null;
-			int OriginalPosition = InputPosition;
 			
 			if (IsKeyword("set"))
 				ParsedAST = ParseSet();
