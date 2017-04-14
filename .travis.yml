@@ -6,6 +6,7 @@ deploy:
   provider: releases
   api_key:
     secure: v9t1qeBAeZ+Hu7lPGDiSe4U0w/hUTVSTCMksC9RqF2ZJ4vDcLmUUVlwdzqgDRRlRb+PobmGxX0iyhr10FTFiIATZsRcRh+kfQeSSxffmbkkOsJ7GOLI51YrOr9rS7j9kft211KtGFxa5ehkI4OelgeCDzYSOAvtXovV/oP+nY/XCXWLaNWa5cEclMRrYPQsQHN/w+rzFir7Gousr9RfbTD5mt8tL+MEhTg1F9fzgsKc8zlp130Bbk4+YPZnG8wEeNY081wABcCjRNw0y8H0jicEDPnnv5Bt/tiMpnNrFIvazs1L0GnjTb0DKXtNFv5PnFmbLcuReq9VD7SJxnz1xeTD2oea83yKcXKB4vy5p9IQ2P0vidyK2kd5URNOIwETt8I9BtBZ8cJkIGTHP3IjuTdcP4Mu47urBYNJOd6EjruA3cZard9Vc/FVbRzT6vG6br5m/Pwp2eJD4EKHJgE4CGZoMrStxnKmNKi3OzOEKJKVpzqS1vzTjPkKi/jg/7MyLHCLCgihuN6XbLR72RZXZtOaBtWh8GRCdj9HKD6nOCPN+ToRr9VMFDF9Gh7+EGoJa/Scl/dz+8J5X7zIzExKb9VsiQKMlhZwRvUsA/qY0rwPyrZ2GAA64ZApagP6I8BrY7ztlQ2qwlRRB4TguZHdH6ts9OWgtvlcqS+7k8/8C5o0=
+<<<<<<< HEAD
   file: DialogueScriptLibrary/bin/Release/DialogueScriptLibrary.dll
   on:
     repo: RangHo/DialogueScript
