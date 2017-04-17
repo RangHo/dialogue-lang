@@ -121,7 +121,7 @@ namespace RangHo.DialogueScript
 		
 		public Identifier InterpreteIdentifier(AST target)
 		{
-			if (OutputManager.FindObject(target.Value as string) == null)
+			if (target.ASTType != AST.Classification.Identifier)
 				return null;
 			Identifier result = new Identifier();
 			result.Name = target.Value as string;
@@ -131,21 +131,21 @@ namespace RangHo.DialogueScript
 		
 		public object InterpreteNumber(AST target)
 		{
-			int result;
-			bool parsable = int.TryParse(target.Value as string, out result);
-			if (!parsable)
-				return null;
-			return result;
+			if (target.ASTType == AST.Classification.Number)
+				return target.Value as object;
+			return null;
 		}
 		
 		public object InterpreteString(AST target)
 		{
+			if (target.ASTType != AST.Classification.String)
+				return null;
 			return (string)target.Value;
 		}
 		
 		public object InterpreteBoolean(AST target)
 		{
-			if (target.Value is bool)
+			if (target.ASTType == AST.Classification.Boolean && target.Value is bool)
 				return (bool)target.Value;
 			return null;
 		}

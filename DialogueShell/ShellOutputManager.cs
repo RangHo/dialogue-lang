@@ -29,18 +29,21 @@ namespace RangHo.DialogueScript.DialogueShell
 		
 		public void Say(object speaker, string content)
 		{
-			Console.WriteLine("{0} says, \"{1}\"", (string)speaker, content);
+			Console.WriteLine("{0} says, \"{1}\"", RegisteredObjects[(string)speaker], content);
 		}
 		
 		public void Set(object value)
 		{
 			if (SelectedObject.IndexOf('.') >= 0)
 			{
-				// TODO: Implement reflection searching
+				string[] Separated = SelectedObject.Split('.');
+				FieldInfo ContainerField = RegisteredObjects[Separated[0]].GetType().GetField(Separated[1], BindingFlags.Public | BindingFlags.Instance);
+				if (ContainerField != null)
+					ContainerField.SetValue(RegisteredObjects[Separated[0]], value);
 			}
 			else
 				RegisteredObjects[SelectedObject] = value;
-			
+
 			Console.WriteLine("Property {0} was changed to {1}", SelectedObject, value);
 		}
 		

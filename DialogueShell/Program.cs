@@ -12,7 +12,57 @@ namespace RangHo.DialogueScript.DialogueShell
 	{
 		public static void Main(string[] args)
 		{
-			InterpreterShit();
+			bool verbose = false;
+			string WhatShouldIDo = string.Empty;
+			string FilePath = string.Empty;
+			foreach (string arg in args)
+			{
+				switch (arg)
+				{
+					case "-v":
+						verbose = true;
+						break;
+					
+					case "--Token":
+						WhatShouldIDo = "token";
+						break;
+					
+					case "--AST":
+						WhatShouldIDo = "ast";
+						break;
+						
+					case "--Interprete":
+						WhatShouldIDo = "interprete";
+						break;
+						
+					default:
+						if (File.Exists(arg))
+							FilePath = arg;
+						break;
+				}
+			}
+			
+			if (WhatShouldIDo == string.Empty)
+				WhatShouldIDo = "interprete";
+			
+			if (FilePath == string.Empty)
+				if (WhatShouldIDo == "token")
+					TokenShit(verbose);
+				else if (WhatShouldIDo == "ast")
+					ASTShit(verbose);
+				else if (WhatShouldIDo == "interprete")
+					InterpreteShit(verbose);
+				else
+					Console.WriteLine("Something went terribly wrong.");
+			else
+				if (WhatShouldIDo == "token")
+					TokenShit(verbose, FilePath);
+				else if (WhatShouldIDo == "ast")
+					ASTShit(verbose, FilePath);
+				else if (WhatShouldIDo == "interprete")
+					InterpreteShit(verbose, FilePath);
+				else
+					Console.WriteLine("Something went terribly wrong.");
 		}
 		
 		public static bool IsAST(object something, int number = 0)
@@ -63,20 +113,29 @@ namespace RangHo.DialogueScript.DialogueShell
 			return s;
 		}
 		
-		public static void TokenShit()
+		public static void TokenShit(bool verbose = false, string FilePath = null)
 		{
 			try
 			{
-				Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Lexer will try to tokenize the expression.");
-				Console.Write(">>> "); string expression = Console.ReadLine();
-				Console.WriteLine("- - - - - - - - - - - - - - -");
-				
-				if (expression == "exit")
-					return;
-				
 				int count = 0;
 				List<Token> tokens = new List<Token>();
-				Tokenizer t = new Tokenizer(expression.ToStream());
+				Tokenizer t;
+				
+				if (FilePath == null)
+				{
+					Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Lexer will try to tokenize the expression.");
+					Console.Write(">>> "); string expression = Console.ReadLine();
+					Console.WriteLine("- - - - - - - - - - - - - - -");
+					
+					if (expression == "exit")
+						return;
+					
+					t = new Tokenizer(expression.ToStream());
+				}
+				else
+					using (FileStream fs = new FileStream(FilePath, FileMode.Open))
+						t = new Tokenizer(fs);
+				
 				Console.WriteLine("==============================");
 				while (true)
 				{
@@ -102,22 +161,31 @@ namespace RangHo.DialogueScript.DialogueShell
 			}
 		}
 		
-		public static void ASTShit()
+		public static void ASTShit(bool verbose = false, string FilePath = null)
 		{
 			while (true)
 			{
 				try
 				{
-					Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Parser will try to parse the expression.");
-					Console.Write(">>> "); string expression = Console.ReadLine();
-					Console.WriteLine("- - - - - - - - - - - - - - -");
-					
-					if (expression == "exit")
-						return;
-					
 					int count = 0;
 					List<Token> tokens = new List<Token>();
-					Tokenizer t = new Tokenizer(expression.ToStream());
+					Tokenizer t;
+					
+					if (FilePath == null)
+					{
+						Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Lexer will try to tokenize the expression.");
+						Console.Write(">>> "); string expression = Console.ReadLine();
+						Console.WriteLine("- - - - - - - - - - - - - - -");
+						
+						if (expression == "exit")
+							return;
+						
+						t = new Tokenizer(expression.ToStream());
+					}
+					else
+						using (FileStream fs = new FileStream(FilePath, FileMode.Open))
+							t = new Tokenizer(fs);
+					
 					Console.WriteLine("==============================");
 					while (true)
 					{
@@ -159,38 +227,49 @@ namespace RangHo.DialogueScript.DialogueShell
 			}
 		}
 		
-		public static void InterpreterShit()
+		public static void InterpreteShit(bool verbose = false, string FilePath = null)
 		{
+			ShellOutputManager om = new ShellOutputManager();
+			
 			while (true)
 			{
 				try
 				{
-					Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Parser will try to parse the expression.");
-					Console.Write(">>> "); string expression = Console.ReadLine();
-					Console.WriteLine("- - - - - - - - - - - - - - -");
-					
-					if (expression == "exit")
-						return;
-					
-					#region Tokenizing
 					int count = 0;
 					List<Token> tokens = new List<Token>();
-					Tokenizer t = new Tokenizer(expression.ToStream());
+					Tokenizer t;
+					
+					if (FilePath == null)
+					{
+						Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Lexer will try to tokenize the expression.");
+						Console.Write(">>> "); string expression = Console.ReadLine();
+						Console.WriteLine("- - - - - - - - - - - - - - -");
+						
+						if (expression == "exit")
+							return;
+						
+						t = new Tokenizer(expression.ToStream());
+					}
+					else
+						using (FileStream fs = new FileStream(FilePath, FileMode.Open))
+							t = new Tokenizer(fs);
+					
 					Console.WriteLine("==============================");
 					while (true)
 					{
 						Token parsed = t.ReadNextToken();
 						if (parsed == null) break;
-						Console.WriteLine("Type of Token {0}: {1}", count, parsed.TokenType);
-						Console.WriteLine("Content of Token {0}: {1}", count, parsed.Content);
-						Console.WriteLine("==============================");
+						if (verbose)
+						{
+							Console.WriteLine("Type of Token {0}: {1}", count, parsed.TokenType);
+							Console.WriteLine("Content of Token {0}: {1}", count, parsed.Content);
+							Console.WriteLine("==============================");
+						}
 						tokens.Add(parsed);
 						count++;
 					}
 					Console.WriteLine("Tokenization complete.\n");
-					#endregion
 					
-					#region Parsing
 					count = 0;
 					List<AST> asts = new List<AST>();
 					Parser p = new Parser(tokens.ToArray());
@@ -199,18 +278,19 @@ namespace RangHo.DialogueScript.DialogueShell
 					{
 						AST parsed = p.ParseNextToken();
 						if (parsed == null) break;
-						Console.WriteLine("Type of AST {0}: {1}", count, parsed.ASTType);
-						IsAST(parsed.Target);
-						IsAST(parsed.Value);
-						Console.WriteLine("==============================");
+						if (verbose)
+						{
+							Console.WriteLine("Type of AST {0}: {1}", count, parsed.ASTType);
+							IsAST(parsed.Target);
+							IsAST(parsed.Value);
+							Console.WriteLine("==============================");
+						}
 						asts.Add(parsed);
 						count++;
 					}
 					Console.WriteLine("Parsing complete.\n");
-					#endregion
 					
-					#region Interpreting
-					Interpreter i = new Interpreter(asts.ToArray(), new ShellOutputManager());
+					Interpreter i = new Interpreter(asts.ToArray(), om);
 					Console.WriteLine("==============================");
 					while (true)
 					{
@@ -218,7 +298,6 @@ namespace RangHo.DialogueScript.DialogueShell
 						Console.WriteLine("==============================");
 					}
 					Console.WriteLine("Done.\n\n");
-					#endregion
 				}
 				catch (Exception e)
 				{

@@ -37,7 +37,7 @@ namespace RangHo.DialogueScript
 		/// </summary>
 		/// <param name="value">Value of the AST</param>
 		/// <returns>A Number AST Object</returns>
-		public static AST CreateNumberAST(float value)
+		public static AST CreateNumberAST(int value)
 		{
 			AST result = new AST();
 			result.ASTType = Classification.Number;
