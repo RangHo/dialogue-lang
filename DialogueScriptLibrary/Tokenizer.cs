@@ -112,35 +112,13 @@ namespace RangHo.DialogueScript
         	return new Token(Token.Classification.LineBreak, "Line Break");
         }
     }
-	
-    public class Token
-    {
-    	[Flags]
-    	public enum Classification
-    	{
-    		Punctuation	= 1,
-    		Number		= 2,
-    		String		= 4,
-    		Keyword		= 8,
-    		Identifier	= 16,
-    		LineBreak	= 32
-    	}
-    	
-    	public Token(Classification type, string content)
-    	{
-    		this.TokenType = type;
-    		this.Content = content;
-    	}
-    	
-    	public Classification TokenType;
-    	
-    	public string Content;
-    }
     
     public static class Predicates
     {
-		public static readonly string[] Keywords = {"set", "of", "null", "true", "false", "done", "label", "choice"};
-        
+        private static readonly string[] keywords = { "set", "of", "null", "true", "false", "done", "label", "choice", "return", "jump" };
+
+        public static string[] Keywords => keywords;
+
         public static bool IsWhitespace(char target)
         {
             return " \t".IndexOf(target) >= 0;
@@ -176,5 +154,5 @@ namespace RangHo.DialogueScript
         {
         	return Keywords.Contains<string>(target);
         }
-    }
+    } 
 }

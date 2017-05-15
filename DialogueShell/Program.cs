@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using RangHo.DialogueScript;
 
 namespace RangHo.DialogueScript.DialogueShell
 {
@@ -10,11 +9,14 @@ namespace RangHo.DialogueScript.DialogueShell
 	/// </summary>
 	public static class Program
 	{
-		public static void Main(string[] args)
+        private static bool verbose = false;
+
+        private static string WhatShouldIDo = null;
+
+        private static string FilePath = null;
+
+        public static void Main(string[] args)
 		{
-			bool verbose = false;
-			string WhatShouldIDo = string.Empty;
-			string FilePath = string.Empty;
 			foreach (string arg in args)
 			{
 				switch (arg)
@@ -42,27 +44,21 @@ namespace RangHo.DialogueScript.DialogueShell
 				}
 			}
 			
-			if (WhatShouldIDo == string.Empty)
+			if (WhatShouldIDo == null)
 				WhatShouldIDo = "interprete";
-			
-			if (FilePath == string.Empty)
-				if (WhatShouldIDo == "token")
-					TokenShit(verbose);
-				else if (WhatShouldIDo == "ast")
-					ASTShit(verbose);
-				else if (WhatShouldIDo == "interprete")
-					InterpreteShit(verbose);
-				else
-					Console.WriteLine("Something went terribly wrong.");
+
+#if DEBUG
+            verbose = true;
+#endif
+
+            if (WhatShouldIDo == "token")
+				TokenShit();
+			else if (WhatShouldIDo == "ast")
+				ASTShit();
+			else if (WhatShouldIDo == "interprete")
+				InterpreteShit();
 			else
-				if (WhatShouldIDo == "token")
-					TokenShit(verbose, FilePath);
-				else if (WhatShouldIDo == "ast")
-					ASTShit(verbose, FilePath);
-				else if (WhatShouldIDo == "interprete")
-					InterpreteShit(verbose, FilePath);
-				else
-					Console.WriteLine("Something went terribly wrong.");
+				Console.WriteLine("Something went terribly wrong.");
 		}
 		
 		public static bool IsAST(object something, int number = 0)
@@ -71,98 +67,92 @@ namespace RangHo.DialogueScript.DialogueShell
 			{
 				int OriginalNumber = number;
 				
-				do {
+				do
+                {
 					Console.Write("\t");
 					number--;
-				} while (number >= 0);
+				}
+                while (number >= 0);
 				number = OriginalNumber;
 				Console.WriteLine("Type of inner AST: {0}", ((AST)something).ASTType);
 				
 				if (((AST)something).Target != null && !IsAST(((AST)something).Target as AST, number + 1)) {
-					do {
+					do
+                    {
 						Console.Write("\t");
 						number--;
-					} while (number >= 0);
+					}
+                    while (number >= 0);
 					number = OriginalNumber;
 					Console.Write("Target of inner AST: ");
 					Console.WriteLine(((AST)something).Target);
 				}
 				
 				if (((AST)something).Value != null && !IsAST(((AST)something).Value as AST, number + 1)) {
-					do {
+					do
+                    {
 						Console.Write("\t");
 						number--;
-					} while (number >= 0);
-					number = OriginalNumber;
+					}
+                    while (number >= 0);
 					Console.Write("Target of inner AST: ");
 					Console.WriteLine(((AST)something).Value);
 				}
-				
 				return true;
 			}
 			return false;
 		}
 		
-		public static Stream ToStream(this string str)
-		{
-			MemoryStream s = new MemoryStream();
-			StreamWriter w = new StreamWriter(s);
-			w.Write(str);
-			w.Flush();
-			s.Position = 0;
-			return s;
-		}
+		public static void TokenShit()
+        {
+            try
+            {
+                int count = 0;
+                List<Token> tokens = new List<Token>();
+                Tokenizer t;
+
+                if (FilePath == null)
+                {
+                    Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Lexer will try to tokenize the expression.");
+                    Console.Write(">>> "); string expression = Console.ReadLine();
+                    Console.WriteLine("- - - - - - - - - - - - - - -");
+
+                    if (expression == "exit")
+                        return;
+
+                    t = new Tokenizer(expression.ToStream());
+                }
+                else
+                    using (FileStream fs = new FileStream(FilePath, FileMode.Open))
+                        t = new Tokenizer(fs);
+
+                Console.WriteLine("==============================");
+                while (true)
+                {
+                    Token parsed = t.ReadNextToken();
+                    if (parsed == null) break;
+                    Console.WriteLine("Type of Token {0}: {1}", count, parsed.TokenType);
+                    Console.WriteLine("Content of Token {0}: {1}", count, parsed.Content);
+                    Console.WriteLine("==============================");
+                    tokens.Add(parsed);
+                    count++;
+                }
+                Console.WriteLine("Done.\n\n");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("==============================");
+                Console.WriteLine("!!! Exception thrown !!!");
+                Console.WriteLine("Following Exception was thrown: {0}", e.GetType());
+                Console.WriteLine("Message	  : {0}", e.Message);
+                Console.WriteLine("Source	  : {0}", e.Source);
+                Console.WriteLine("StackTrace : {0}", e.StackTrace);
+                Console.WriteLine("==============================");
+            }
+        }
 		
-		public static void TokenShit(bool verbose = false, string FilePath = null)
-		{
-			try
-			{
-				int count = 0;
-				List<Token> tokens = new List<Token>();
-				Tokenizer t;
-				
-				if (FilePath == null)
-				{
-					Console.WriteLine("Write a DialogueScript Expression below. The DialogueScript Lexer will try to tokenize the expression.");
-					Console.Write(">>> "); string expression = Console.ReadLine();
-					Console.WriteLine("- - - - - - - - - - - - - - -");
-					
-					if (expression == "exit")
-						return;
-					
-					t = new Tokenizer(expression.ToStream());
-				}
-				else
-					using (FileStream fs = new FileStream(FilePath, FileMode.Open))
-						t = new Tokenizer(fs);
-				
-				Console.WriteLine("==============================");
-				while (true)
-				{
-					Token parsed = t.ReadNextToken();
-					if (parsed == null) break;
-					Console.WriteLine("Type of Token {0}: {1}", count, parsed.TokenType);
-					Console.WriteLine("Content of Token {0}: {1}", count, parsed.Content);
-					Console.WriteLine("==============================");
-					tokens.Add(parsed);
-					count++;
-				}
-				Console.WriteLine("Done.\n\n");
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("==============================");
-				Console.WriteLine("!!! Exception thrown !!!");
-				Console.WriteLine("Following Exception was thrown: {0}", e.GetType());
-				Console.WriteLine("Message	  : {0}", e.Message);
-				Console.WriteLine("Source	  : {0}", e.Source);
-				Console.WriteLine("StackTrace : {0}", e.StackTrace);
-				Console.WriteLine("==============================");
-			}
-		}
-		
-		public static void ASTShit(bool verbose = false, string FilePath = null)
-		{
+		public static void ASTShit()
+        {
 			while (true)
 			{
 				try
@@ -227,8 +217,8 @@ namespace RangHo.DialogueScript.DialogueShell
 			}
 		}
 		
-		public static void InterpreteShit(bool verbose = false, string FilePath = null)
-		{
+		public static void InterpreteShit()
+        {
 			ShellOutputManager om = new ShellOutputManager();
 			
 			while (true)
@@ -311,5 +301,15 @@ namespace RangHo.DialogueScript.DialogueShell
 				}
 			}
 		}
-	}
+
+        public static Stream ToStream(this string str)
+        {
+            MemoryStream s = new MemoryStream();
+            StreamWriter w = new StreamWriter(s);
+            w.Write(str);
+            w.Flush();
+            s.Position = 0;
+            return s;
+        }
+    }
 }

@@ -65,5 +65,22 @@ namespace RangHo.DialogueScript
         /// The interpreter will call this method when it finishes reading the script.
         /// </summary>
         void Finish();
+
+        /// <summary>
+        /// The interpreter will call this method when it meets a label statement.
+        /// </summary>
+        /// <remarks>
+        /// Save the location of each label so that the interpreter does not have to look the position up again.
+        /// </remarks>
+        /// <param name="name">Name of the label</param>
+        /// <param name="position">Position of the label</param>
+        void RegisterLabelLocation(string name, int position);
+
+        /// <summary>
+        /// The interpreter will call this method when it needs the location of a specific label.
+        /// </summary>
+        /// <param name="name">Name of the label</param>
+        /// <returns>Postition of the label, -1 if not found.</returns>
+        int RetrieveLabelLocation(string name);
     }
 }

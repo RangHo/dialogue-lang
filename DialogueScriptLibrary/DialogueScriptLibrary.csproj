@@ -43,10 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AST.cs" />
+    <Compile Include="GenericStream.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="IOutputManager.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="Token.cs" />
     <Compile Include="Tokenizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
