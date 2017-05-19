@@ -1,7 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-# SharpDevelop 5.1
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueShell", "DialogueShell\DialogueShell.csproj", "{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueScriptLibrary", "DialogueScriptLibrary\DialogueScriptLibrary.csproj", "{4B93EB05-AB21-42D0-97FF-14882AF7E286}"
@@ -9,16 +10,24 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug-ExternalFile|Any CPU = Debug-ExternalFile|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}.Debug-ExternalFile|Any CPU.ActiveCfg = Debug-ExternalFile|Any CPU
+		{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}.Debug-ExternalFile|Any CPU.Build.0 = Debug-ExternalFile|Any CPU
 		{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8130F99E-0A63-4B32-AEA5-23A3ABB6FFB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4B93EB05-AB21-42D0-97FF-14882AF7E286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B93EB05-AB21-42D0-97FF-14882AF7E286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B93EB05-AB21-42D0-97FF-14882AF7E286}.Debug-ExternalFile|Any CPU.ActiveCfg = Debug-ExternalFile|Any CPU
+		{4B93EB05-AB21-42D0-97FF-14882AF7E286}.Debug-ExternalFile|Any CPU.Build.0 = Debug-ExternalFile|Any CPU
 		{4B93EB05-AB21-42D0-97FF-14882AF7E286}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B93EB05-AB21-42D0-97FF-14882AF7E286}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

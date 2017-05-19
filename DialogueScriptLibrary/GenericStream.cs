@@ -11,6 +11,8 @@ namespace RangHo.DialogueScript
 
         private int Position;
 
+        public readonly int Beginning = 0;
+
         public GenericStream(T[] input)
         {
             this.Input = input;

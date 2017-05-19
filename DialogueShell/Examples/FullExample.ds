@@ -1,0 +1,54 @@
+set character "Hos Goodline"
+
+set left of scene character
+
+character: "Hello, world!"
+
+choice morning: "Good morning!"
+choice afternoon: "Good afternoon!"
+choice evening: "Good evening!"
+
+
+
+label morning
+
+character: "Good morning too!"
+character: "I am glad to see you!"
+
+jump ending
+
+
+
+label afternoon
+
+character: "Good afternoon!"
+character: "How was your lunch today?"
+
+choice good: "Pretty nice."
+choice bad: "It was horrible."
+
+label good
+character: "Nice!"
+jump ending
+
+label bad
+character: "Oh, I am sorry."
+character: "I gotta go, good-bye!"
+return
+
+
+
+label evening
+
+character: "Good evening!"
+character: "Have a good night sleep today!"
+
+jump ending
+
+
+
+label ending
+
+character: "Well, it was nice to see you!"
+character: "See you later!"
+return

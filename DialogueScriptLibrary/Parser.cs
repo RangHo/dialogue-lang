@@ -61,7 +61,7 @@ namespace RangHo.DialogueScript
         public AST ParseSay()
         {
             AST result = null;
-            if (!Input.IsEnd(3))
+            if (Input.IsEnd(3))
                 return result;
 
             Token Speaker = Input.Read(), Colon = Input.Read(), Conversation = Input.Read();

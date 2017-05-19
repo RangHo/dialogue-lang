@@ -25,6 +25,22 @@ namespace RangHo.DialogueScript
         	}
         	return str.ToString();
         }
+
+        public string ReadWhile(char UntilThisCharacter)
+        {
+            StringBuilder str = new StringBuilder();
+            while (Input.Peek() != UntilThisCharacter)
+            {
+                char temp = (Input.EndOfStream) ? throw new InvalidCharacterException("The tokenizer reached EOF while processing a token.") : (char)Input.Read();
+
+                if (temp == '\n')
+                    throw new InvalidCharacterException("Line break happened while reading a token.");
+
+                str.Append(temp);
+            }
+            Input.Read();       // Remove the extra " character
+            return str.ToString();
+        }
         
         public Token ReadNextToken()
         {
@@ -37,6 +53,8 @@ namespace RangHo.DialogueScript
         		return SkipComment();
         	if (target == '"')
         		return ReadString();
+            if (target == '\r')                 // FUCK YOU CRLF
+                return ReadLineBreak(true);
         	if (target == '\n')
         		return ReadLineBreak();
         	if (Predicates.IsDigit(target))
@@ -58,39 +76,13 @@ namespace RangHo.DialogueScript
         
         public Token ReadString()
         {
-        	StringBuilder str = new StringBuilder();
-        	bool escaped = false;	// True if escaped
-        	Input.Read();			// Removes the extra " character at the beginning of token
-        	while (Input.Peek() > -1)
-        	{
-        		char target = (char)Input.Read();
-        		
-        		if (escaped)
-        			switch (target)
-        			{
-        			case 'n':
-        				str.Append('\n');
-        				escaped = false;
-        				break;
-        			case 't':
-        				str.Append('\t');
-        				escaped = false;
-        				break;
-        			case '\\':
-        				str.Append('\\');
-        				escaped = false;
-        				break;
-        			default:
-        				throw new InvalidCharacterException(string.Format("Invalid escape character was supplied: {0}", target));
-        			}
-        		else if (target == '\\')
-        			escaped = true;
-        		else if (target == '"')
-        			break;
-        		else
-        			str.Append(target);
-        	}
-            
+            Input.Read();           // Removes the extra " character at the beginning of token
+            StringBuilder str = new StringBuilder(ReadWhile('"'));
+
+            // Replace some escaped characters
+            str.Replace("\\n", "\n");
+            str.Replace("\\t", "\t");
+
             return new Token(Token.Classification.String, str.ToString());
         }
         
@@ -106,9 +98,11 @@ namespace RangHo.DialogueScript
         	return new Token(Token.Classification.Number, str);
         }
         
-        public Token ReadLineBreak()
+        public Token ReadLineBreak(bool CRLF = false)
         {
         	Input.Read();
+            if (CRLF)
+                Input.Read();
         	return new Token(Token.Classification.LineBreak, "Line Break");
         }
     }

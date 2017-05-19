@@ -51,7 +51,8 @@ namespace RangHo.DialogueScript.DialogueShell
         
         public void RegisterObject(object target, string name)
         {
-            Console.WriteLine("This feature is not suppored yet.");
+            RegisteredObjects.Add(name, target);
+            Console.WriteLine("New object {0} was registered successfully. The value of {0} is {1}.", name, target);
         }
         
         public object FindObject(string name)
@@ -73,11 +74,10 @@ namespace RangHo.DialogueScript.DialogueShell
         {
             Console.WriteLine("==============================");
             Console.WriteLine("!!! Exception thrown !!!");
-            Console.WriteLine("Following Exception was thrown: {0}", e.GetType());
+            Console.WriteLine("Following Exception was thrown: {0}\n", e.GetType());
             Console.WriteLine("Message      : {0}", e.Message);
-            Console.WriteLine("Source      : {0}", e.Source);
-            Console.WriteLine("StackTrace : {0}", e.StackTrace);
-            Console.WriteLine("\nRestarting Interpreter...");
+            Console.WriteLine("Source       : {0}\n", e.Source);
+            Console.WriteLine("StackTrace   :\n{0}", e.StackTrace);
             Finish();
         }
         
@@ -93,8 +93,13 @@ namespace RangHo.DialogueScript.DialogueShell
             }
             
             Console.Write("Input a number here: ");
-            int ChoiceNumber = 0;
-            int.TryParse(Console.ReadLine(),out ChoiceNumber);
+            int.TryParse(Console.ReadLine(), out int ChoiceNumber);
+
+            if (ChoiceNumber >= ChoicesDictionary.Count)
+            {
+                Console.WriteLine("Invalid number was provided.");
+                Console.WriteLine("Press any key to exit...");
+            }
             
             Console.WriteLine("You chose {0}. Going to label {1}...", ChoicesDictionary.Values.ToList()[ChoiceNumber], ChoicesDictionary.Keys.ToList()[ChoiceNumber]);
             
@@ -103,17 +108,19 @@ namespace RangHo.DialogueScript.DialogueShell
         
         public void Finish()
         {
-            // There is nothing to do...
+            Console.WriteLine("\nDone.");
+            Console.ReadKey();
         }
 
         public void RegisterLabelLocation(string name, int position)
         {
-            RegisteredLabelPosition.Add(name, position);
+            RegisteredLabelPosition.Add(name, position + 1);
+            Console.WriteLine($"Label {name} located in {position - 1} was successfully registered.");
         }
 
         public int RetrieveLabelLocation(string name)
         {
-            if (RegisteredLabelPosition.TryGetValue(name, out int position))
+            if (!RegisteredLabelPosition.TryGetValue(name, out int position))
                 position = -1;
             return position;
         }

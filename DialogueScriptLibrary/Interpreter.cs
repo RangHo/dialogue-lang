@@ -13,6 +13,8 @@ namespace RangHo.DialogueScript
 		private readonly IOutputManager OutputManager;
 		
 		private delegate object Interprete(AST target);
+
+        private bool LabelScanned = false;
 		
 		public Interpreter(AST[] input, IOutputManager output)
 		{
@@ -48,6 +50,9 @@ namespace RangHo.DialogueScript
                     case AST.Classification.Return:
                         InterpreteReturn();
                         return true;
+
+                    case AST.Classification.LineBreak:
+                        break;
                     
                     // Some invalid cases... Not a statement.
                     case AST.Classification.Identifier:
@@ -63,6 +68,11 @@ namespace RangHo.DialogueScript
 					default:
 						throw new InvalidStatementPassedException($"Invalid statement AST {Input.Peek().ASTType} was passed. An element such as Number cannot be a statement.");
 				}
+
+                if (Input.Peek().ASTType != AST.Classification.LineBreak)
+                    throw new InvalidStatementPassedException("Each statements must be separated by line break.");
+
+                Input.Read();       // Remove the line break AST
 			}
 			catch (Exception e)
 			{
@@ -71,6 +81,19 @@ namespace RangHo.DialogueScript
 			
 			return true;
 		}
+
+        public void ScanForLabels()
+        {
+            while (!Input.IsEnd())
+            {
+                if (Input.Peek().ASTType == AST.Classification.Label)
+                    InterpreteLabel();
+                else
+                    Input.Read();
+            }
+            Input.RecoverPosition(Input.Beginning);
+            LabelScanned = true;
+        }
 		
 		public void InterpreteSay()
 		{
@@ -102,9 +125,11 @@ namespace RangHo.DialogueScript
 			while (Expected(AST.Classification.Choice))
             {
                 AST NextChoiceAST = Input.Read();
-                string label = InterpreteString(NextChoiceAST.Target as AST) as string;
+                string label = InterpreteIdentifier(NextChoiceAST.Target as AST) as string;
                 string content = InterpreteString(NextChoiceAST.Value as AST) as string;
                 Choices.Add(label, content);
+                if (Expected(AST.Classification.LineBreak, RaiseException: true))
+                    Input.Read();       // Get rid of the Line Break AST 
             }
 			
 			OutputManager.Choices(Choices, ref ChosenLabel);
@@ -113,9 +138,12 @@ namespace RangHo.DialogueScript
 
         public void InterpreteLabel()
         {
-            AST CurrentAST = Input.Read();
-            string Name = ((AST)CurrentAST.Value).Value as string;
-            OutputManager.RegisterLabelLocation(Name, Input.BackupPosition());
+            if (!LabelScanned)
+            {
+                AST CurrentAST = Input.Read();
+                string Name = ((AST)CurrentAST.Value).Value as string;
+                OutputManager.RegisterLabelLocation(Name, Input.BackupPosition());
+            }
         }
 
         public void InterpreteJump()
@@ -145,7 +173,6 @@ namespace RangHo.DialogueScript
 		{
             if (Expected(AST.Classification.Identifier, target))
 				return target.Value as string;
-
             return null;
 		}
 		
@@ -159,7 +186,7 @@ namespace RangHo.DialogueScript
 		public object InterpreteString(AST target)
 		{
 			if (Expected(AST.Classification.String, target))
-				return target.Value as string;
+				return target.Value;
 			return null;
 		}
 		
