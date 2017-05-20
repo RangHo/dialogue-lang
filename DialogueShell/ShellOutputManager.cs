@@ -58,7 +58,7 @@ namespace RangHo.DialogueScript.DialogueShell
         public object FindObject(string name)
         {
             if (!RegisteredObjects.TryGetValue(name, out object result))
-                return null;
+                throw new InvalidStatementPassedException($"Object {name} was not found in this context.");
             return result;
         }
         

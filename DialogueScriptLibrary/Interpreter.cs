@@ -114,7 +114,15 @@ namespace RangHo.DialogueScript
 			}
 			string property = InterpreteIdentifier(CurrentAST.Target as AST) as string;
 			OutputManager.Select(property);
-			OutputManager.Set(Maybe(CurrentAST.Value as AST, InterpreteIdentifier, InterpreteNumber, InterpreteBoolean, InterpreteString));
+
+            object result = null;
+
+            if (Expected(AST.Classification.Identifier, NextAST: CurrentAST.Value as AST))
+                result = OutputManager.FindObject((InterpreteIdentifier(CurrentAST.Value as AST) as string));
+            else
+                result = Maybe(CurrentAST.Value as AST, InterpreteNumber, InterpreteBoolean, InterpreteString);
+
+            OutputManager.Set(result);
 		}
 		
 		public void InterpreteChoice()
